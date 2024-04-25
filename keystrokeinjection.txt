@@ -1,0 +1,4 @@
+HID- Human Interface Device.
+A keyboard is an example of this.
+
+A keyboard plugs into the USB.
