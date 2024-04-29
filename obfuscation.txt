@@ -1,0 +1,8 @@
+REM Author: Portals
+DELAY 1000
+GUI r
+DELAY 100
+STRING cmd /c "start /MIN cmd /C "color FE && tree c:\ /F /A""
+ENTER
+
+In the above example it will run minimized and also run it in FE color to where its very hard to read if they were even to open the running cmd prompt that is minized at the bottom.

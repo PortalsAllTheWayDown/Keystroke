@@ -1,0 +1,46 @@
+Be sure to deploy the payload on a test machine several times until desired result is achieved for thisreason its important to become familiar with the payload development process:
+-target
+-research
+-write
+-compile
+-test
+-optimize
+
+Doing research if possible you can run the OS on a vm, or you can just buy the actual machine.
+When making the script you want to use techniques with the widest possible support.
+
+
+Begin writing your payload by first manually typing into the target test machine, making careful notes of which keystroke combinations and delays succeed at accomplishing your objective.
+Carefully mind any necessary delays in the duckyscript especially when interacting with GUI elements. The target computers cpu speed will play an important role in determining how long to delay between input.
+If the target is a high end modern machine you may craft a quicker payload with less delays.
+
+Example payload:
+
+REM Title: Hello, World!
+REM Description: Type Hello World into notepad
+REM Target: Windows 95 and greater
+REM Author: Portals
+
+//The next line should delay for at least one full second. The purpose is to allow the target comupter to enumerate the USN rubber ducky as a keybaord and load the generic HID keyboard drivers.
+//On much older machines consider a longer delay.
+//The operating system may not be ready to process them.
+
+Delay 1000
+
+//Windowrs key + R to bring up the Run dialog
+
+GUI r
+
+//Need another delay the USB has a clock speed of 60,000 cycles per second. For this reason we will need a delay.
+
+Delay 100
+
+STRING c:\windows\notepad.exe
+
+ENTER
+
+DELAY 1000
+
+STRING Hello, World!
+
+//Delays cant go below 40
